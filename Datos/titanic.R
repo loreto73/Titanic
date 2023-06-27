@@ -1,0 +1,47 @@
+install.packages('tidyverse')
+
+library(ggplot2)
+library(tidyverse)
+train = read.csv('/home/loreto/Escritorio/Nueva carpeta/Ciencia de datos/Datos/Excel kaggle/Titanic/train.csv')
+test = read.csv('/home/loreto/Escritorio/Nueva carpeta/Ciencia de datos/Datos/Excel kaggle/Titanic/test.csv')
+View(test)
+valor_mean <- mean(train$Age, na.rm = TRUE)
+valor_mean
+
+train$Age <- round(train$Age %>%
+                                replace(is.na(.),valor_mean), digits = 0)
+
+# Ajuste de un modelo logístico.
+modelo_glm <- glm(Survived ~ Sex + Pclass + Age + SibSp, data = train, family = "binomial")
+summary(modelo_glm)
+       
+predicciones <- ifelse(test = modelo_glm$fitted.values > 0.6, yes = 1, no = 0)
+matriz_confusion <- table(modelo_glm$model$Survived, predicciones,
+                            dnn = c("observaciones", "predicciones"))
+matriz_confusion
+  mosaic(matriz_confusion, shade = T, colorize = T,
+         gp = gpar(fill = matrix(c("green3", "red2", "red2", "green3"), 2, 2)))
+
+precision2 = (504 + 219) / (504+219+45+123)
+precision2
+
+valor_mean <- mean(test$Age, na.rm = TRUE)
+valor_mean
+
+test$Age <- round(test$Age %>%
+                     replace(is.na(.),valor_mean), digits = 0)
+
+test$Sex <- ifelse(test$Sex== "male", 1, 0)
+test$odd = 5.191317 + test$Sex*-2.739715 + test$Pclass*-1.171568 +
+  test$Age*-0.039756 + test$SibSp*-0.357984
+
+test$prob = exp(test$odd) / ( 1 + exp(test$odd))
+test$Survived <- ifelse(test$prob > 0.6, 1, 0)
+
+test = data.frame(test2$PassengerId, test$Survived)
+names (test)[1] = 'PassengerId'
+names (test)[2] = 'Survived'
+submission = test
+View(submission)
+
+write.csv(submission, "/home/loreto/Escritorio/Nueva carpeta/Ciencia de datos/Datos/Excel kaggle/submission5.csv")
