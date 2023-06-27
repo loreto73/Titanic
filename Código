@@ -1,43 +1,66 @@
 library(ggplot2)
 library(tidyverse)
+
+## Cargamos los datos de entrenamiento y de test
 train = read.csv('/home/loreto/Escritorio/Nueva carpeta/Ciencia de datos/Datos/Excel kaggle/Titanic/train.csv')
 test = read.csv('/home/loreto/Escritorio/Nueva carpeta/Ciencia de datos/Datos/Excel kaggle/Titanic/test.csv')
-View(test)
+
+## La variable 'Age' del set de entrenamiento tiene missings, por lo que, 
+## con ayuda de tidyverse, se procede a reemplazarlos por la media de la variable
 valor_mean <- mean(train$Age, na.rm = TRUE)
 valor_mean
-
 train$Age <- round(train$Age %>%
                                 replace(is.na(.),valor_mean), digits = 0)
 
-# Ajuste de un modelo logístico.
+## Realizamos el modelo logístico. La variable FARE no resultó ser estadísitcamente significativa
 modelo_glm <- glm(Survived ~ Sex + Pclass + Age + SibSp, data = train, family = "binomial")
 summary(modelo_glm)
        
+## Observamos como las predicciones del modelo se ajusta al set de entrenamiento
 predicciones <- ifelse(test = modelo_glm$fitted.values > 0.6, yes = 1, no = 0)
 matriz_confusion <- table(modelo_glm$model$Survived, predicciones,
                             dnn = c("observaciones", "predicciones"))
 matriz_confusion
+
+## Graficamos para mejor visualización
   mosaic(matriz_confusion, shade = T, colorize = T,
          gp = gpar(fill = matrix(c("green3", "red2", "red2", "green3"), 2, 2)))
 
+## Calculamos el porcentaje predicho correctamente
 precision2 = (504 + 219) / (504+219+45+123)
 precision2
 
+## Ya que estamos satisfechos con el performance del modelo en nuestro set 
+## de entrenamiento, ahora procedemos a usarlo en el set de test.
+
+# El set de test también posee registros con missing en la variable Age,
+## por lo que procedemos a reemplazarlos por la media
 valor_mean <- mean(test$Age, na.rm = TRUE)
 valor_mean
 
 test$Age <- round(test$Age %>%
                      replace(is.na(.),valor_mean), digits = 0)
 
+## Converimos la variable Sex de categórica a numérica para poder hacer los cálculos
 test$Sex <- ifelse(test$Sex== "male", 1, 0)
-test$odd = 5.191317 + test$Sex*-2.739715 + test$Pclass*-1.171568 +
-  test$Age*-0.039756 + test$SibSp*-0.357984
 
+## Obtenemos la ecuación 'exp(z)' a partir de las estimaciones realizadas en el set de entrenamiento y 
+## utilizadas con los valores de las variables del set de test
+test$odd = 5.191317 + test$Sex*-2.739715 + test$Pclass*-1.171568 + test$Age*-0.039756 + test$SibSp*-0.357984
+
+## Obtenemos la función logística
 test$prob = exp(test$odd) / ( 1 + exp(test$odd))
+
+## Ahora asiganmos un 1 a aquellos pasajeros con una probabilidad mayor a 6 a los demás con un 0
 test$Survived <- ifelse(test$prob > 0.6, 1, 0)
 
+## Generamos una tabla con las dos variables de interés: PassengerId y Survived
+
+## Renombramos por cuestión de formato
 test = data.frame(test2$PassengerId, test$Survived)
 names (test)[1] = 'PassengerId'
 names (test)[2] = 'Survived'
+
+## Renombramos el dataframe y lo visualizamos
 submission = test
 View(submission)
