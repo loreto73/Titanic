@@ -35,8 +35,8 @@ matriz_confusion
          gp = gpar(fill = matrix(c("green3", "red2", "red2", "green3"), 2, 2)))
 
 ## Calculamos el porcentaje predicho correctamente
-precision2 = (504 + 219) / (504+219+45+123)
-precision2
+precision = (504 + 219) / (504+219+45+123)
+precision
 
 ## Ya que estamos satisfechos con el performance del modelo en nuestro set 
 ## de entrenamiento, ahora procedemos a usarlo en el set de test.
