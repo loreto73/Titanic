@@ -30,10 +30,6 @@ matriz_confusion <- table(modelo_glm$model$Survived, predicciones,
                             dnn = c("observaciones", "predicciones"))
 matriz_confusion
 
-## Graficamos para mejor visualización
-  mosaic(matriz_confusion, shade = T, colorize = T,
-         gp = gpar(fill = matrix(c("green3", "red2", "red2", "green3"), 2, 2)))
-
 ## Calculamos el porcentaje predicho correctamente
 precision = (504 + 219) / (504+219+45+123)
 precision
@@ -51,6 +47,8 @@ test$Age <- round(test$Age %>%
 
 ## Converimos la variable Sex de categórica a numérica para poder hacer los cálculos
 test$Sex <- ifelse(test$Sex== "male", 1, 0)
+test$Pclass2 = ifelse(test$Pclass==2,1,0)
+test$Pclass3 = ifelse(test$Pclass==3,1,0)
 
 ## Obtenemos la ecuación 'exp(z)' a partir de las estimaciones realizadas en el set de entrenamiento y 
 ## utilizadas con los valores de las variables del set de test
