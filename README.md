@@ -20,3 +20,9 @@ Primero necesitamos un panorama de la información que analizaremos. Se trata de
 | Fare        | Passenger fare                             | 891           |
 | Cabin       | Cabin number                               | 204           |
 | Embarked    | Port of Embarkation                        | 889           |
+
+Ahora empezaremos a explorar más la información a partir del agrupamiento de variables. Para eso, usamos la función groupby().
+
+Podemos empezar a visualizar cuantos pasajeros sobrevivieron con base en la clase.
+
+El resultado de la suma es: `resultado`
