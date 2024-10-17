@@ -2,10 +2,30 @@
 
 import pandas as pd
 import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix
 
 #Creamos el dataframe
 Titanic = pd.read_csv('/home/luis-loreto/Documentos/Python/Titanic/Tablas/train.csv')
+
+#Intentamos hacer una gráfico sencillo
+
+sns.histplot(x = Titanic['Age'], kde = True, line_kws = {'linestyle' : 'dashed', 
+                                                 'linewidth' : '2'}).lines[0].set_color('red')
+
+plt.show()
+
+#Vamos a explorar un poco la variable Pclass
+
+Pclass = Titanic.groupby(["Survived", "Pclass"])["Survived"].count().reset_index(name="Cantidad")
+
+Pclass = Pclass.pivot_table(index='Pclass', columns='Survived', values='Cantidad', aggfunc='sum', fill_value=0)
+Pclass['Total'] = (Pclass[0] + Pclass[1])
+Pclass["% de sobrevivientes"] = (Pclass[1] / Pclass['Total'])
+Pclass
 
 #Hay dos variables problemáticas: Age y Ticket. La primera requiere algún método de imputación para poder usarse y la segunda reuquiere limpieza
 
